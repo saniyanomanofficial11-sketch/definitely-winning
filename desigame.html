@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Desi Survival: The Quest for Perfect Sukoon</title>
+<style>
+:root{
+  --paper:#fff3d6;
+  --hot:#ff4d6d;
+  --gold:#ffc93c;
+  --mint:#2ec4b6;
+  --deep:#241a3d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:"Trebuchet MS",Verdana,sans-serif;
+  background:
+    radial-gradient(circle at 20% 10%,#3d2a63 0%,transparent 55%),
+    radial-gradient(circle at 85% 85%,#7a2b4d 0%,transparent 55%),
+    var(--deep);
+  color:var(--paper);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:12px;
+}
+#arcade{
+  width:100%;
+  max-width:820px;
+  background:linear-gradient(180deg,#2f2150,#1b1230);
+  border:6px solid var(--gold);
+  border-radius:22px;
+  box-shadow:0 0 0 6px #00000055,0 18px 50px #000a;
+  overflow:hidden;
+}
+header{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 14px;
+  background:#00000033;
+  border-bottom:3px dashed #ffffff22;
+}
+.meterWrap{flex:1 1 240px}
+.meterLabel{font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.bar{
+  height:18px;
+  border:3px solid var(--paper);
+  border-radius:99px;
+  overflow:hidden;
+  background:#00000055;
+}
+#sukoonFill{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,var(--mint),var(--gold),var(--hot));
+  transition:width:.3s;
+}
+#clock{font-size:20px;font-weight:bold;color:var(--gold)}
+#journey{
+  position:relative;
+  height:65px;
+  margin:0 18px;
+}
+#pathLine{
+  position:absolute;
+  left:10px;
+  right:10px;
+  top:34px;
+  height:5px;
+  background:#ffffff25;
+  border-radius:20px;
+}
+.step{
+  position:absolute;
+  top:25px;
+  width:20px;
+  height:20px;
+  border-radius:50%;
+  background:#3b2a66;
+  border:3px solid var(--gold);
+  z-index:1;
+}
+#step1{left:0}
+#step2{left:33%}
+#step3{left:66%}
+#step4{right:0}
+#player{
+  position:absolute;
+  top:0;
+  left:0;
+  font-size:30px;
+  z-index:3;
+  transition:left:.5s ease;
+}
+#stage{
+  min-height:430px;
+  padding:20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  gap:14px;
+}
+h1{
+  font-size:clamp(25px,6vw,42px);
+  margin:0;
+  line-height:1.05;
+  color:var(--gold);
+  text-shadow:3px 3px 0 var(--hot);
+}
+h2{margin:0;font-size:clamp(20px,5vw,30px);color:var(--gold)}
+p{margin:0;max-width:55ch;line-height:1.5}
+.small{font-size:13px;opacity:.85}
+button{
+  font-family:inherit;
+  font-weight:bold;
+  font-size:16px;
+  cursor:pointer;
+  background:var(--hot);
+  color:white;
+  border:0;
+  border-bottom:5px solid #a3203c;
+  padding:12px 20px;
+  border-radius:12px;
+}
+button:active{transform:translateY(3px);border-bottom-width:2px}
+button.ghost{background:var(--mint);border-bottom-color:#1c8a80}
+button.opt{
+  background:#3b2a66;
+  border-bottom-color:#241a3d;
+  width:100%;
+  text-align:left;
+  font-size:15px;
+}
+button.opt:hover{background:#4d3785}
+.grid{display:grid;gap:10px;width:100%;max-width:460px}
+.badge{
+  display:inline-block;
+  background:#ffffff1a;
+  border:2px solid var(--gold);
+  border-radius:99px;
+  padding:4px 12px;
+  font-size:12px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.pot{
+  position:relative;
+  width:190px;
+  height:150px;
+  background:linear-gradient(180deg,#8d8d9a,#5a5a68);
+  border-radius:14px 14px 40px 40px;
+  border:4px solid #2c2c36;
+  overflow:hidden;
+}
+#chaiLiquid{
+  position:absolute;
+  left:0;
+  bottom:0;
+  width:100%;
+  height:20%;
+  background:linear-gradient(180deg,#e0a45c,#c98a4b);
+}
+.safeZone{
+  position:absolute;
+  left:0;
+  width:100%;
+  border-top:2px dashed white;
+  border-bottom:2px dashed white;
+  background:#ffffff14;
+}
+#dish{
+  position:relative;
+  width:100%;
+  max-width:420px;
+  height:150px;
+  border-radius:14px;
+  background:radial-gradient(circle at 50% 40%,#f4c66a,#c1873c);
+  border:4px solid #6b4520;
+  overflow:hidden;
+}
+#aloo{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  width:52px;
+  height:44px;
+  border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fff0b8,#e0a63c);
+  border:3px solid #7a5217;
+}
+#chappal{
+  position:absolute;
+  top:12px;
+  left:0;
+  width:60px;
+  height:26px;
+  border-radius:30px 12px 12px 30px;
+  background:linear-gradient(180deg,#6d3b1f,#3d1f0e);
+  border:3px solid #1c0d05;
+}
+#fan{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:conic-gradient(#2ec4b6 0 25%,#3b2a66 0 50%,#2ec4b6 0 75%,#3b2a66 0);
+  border:5px solid var(--gold);
+}
+.flash{animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+footer{
+  padding:8px 14px;
+  background:#00000033;
+  font-size:12px;
+  opacity:.75;
+  text-align:center;
+}
+@media(max-width:500px){
+  #stage{min-height:470px}
+  #journey{margin:0 10px}
+}
+</style>
+</head>
+<body>
+<div id="arcade">
+<header>
+  <div class="meterWrap">
+    <div class="meterLabel">Sukoon Meter — <span id="sukoonVal">100</span>%</div>
+    <div class="bar"><div id="sukoonFill"></div></div>
+  </div>
+  <div id="clock">8:00 AM</div>
+</header>
+
+<div id="journey">
+  <div id="pathLine"></div>
+  <div class="step" id="step1"></div>
+  <div class="step" id="step2"></div>
+  <div class="step" id="step3"></div>
+  <div class="step" id="step4"></div>
+  <div id="player">🧑🏻</div>
+</div>
+
+<div id="stage"></div>
+
+<footer>Made with HTML, CSS &amp; JavaScript · Peace of mind not guaranteed</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var stage=document.getElementById("stage");
+var clockEl=document.getElementById("clock");
+var fill=document.getElementById("sukoonFill");
+var val=document.getElementById("sukoonVal");
+var player=document.getElementById("player");
+
+var S={sukoon:100,minutes:480,timer:null,audio:null,musicGain:null};
+
+var EVENTS=[
+  {at:480,key:"chai",done:false},
+  {at:840,key:"auntie",done:false},
+  {at:1020,key:"aloo",done:false},
+  {at:1260,key:"light",done:false}
+];
+
+function fmt(m){
+  var h=Math.floor(m/60)%24;
+  var mm=m%60;
+  var ap=h>=12?"PM":"AM";
+  var hh=h%12;
+  if(hh===0)hh=12;
+  return hh+":"+(mm<10?"0":"")+mm+" "+ap;
+}
+
+function paint(){
+  var v=Math.max(0,Math.min(100,Math.round(S.sukoon)));
+  fill.style.width=v+"%";
+  val.textContent=v;
+  clockEl.textContent=fmt(S.minutes);
+  var progress=(S.minutes-480)/840;
+  progress=Math.max(0,Math.min(1,progress));
+  player.style.left="calc("+progress*100+"% - 4px)";
+}
+
+function hit(amount){
+  S.sukoon-=amount;
+  if(S.sukoon<0)S.sukoon=0;
+  stage.classList.remove("flash");
+  void stage.offsetWidth;
+  stage.classList.add("flash");
+  paint();
+}
+
+function gain(amount){
+  S.sukoon+=amount;
+  if(S.sukoon>100)S.sukoon=100;
+  paint();
+}
+
+function clearStage(){stage.innerHTML=""}
+
+function makeElement(tag,className,text){
+  var element=document.createElement(tag);
+  if(className)element.className=className;
+  if(text!==undefined)element.innerHTML=text;
+  return element;
+}
+
+function startMusic(){
+  if(S.audio)return;
+  var AudioContext=window.AudioContext||window.webkitAudioContext;
+  if(!AudioContext)return;
+
+  var ctx=new AudioContext();
+  var gain=ctx.createGain();
+  gain.gain.value=.035;
+  gain.connect(ctx.destination);
+
+  S.audio=ctx;
+  S.musicGain=gain;
+
+  var notes=[261.63,329.63,392,329.63,293.66,349.23,440,349.23];
+  var index=0;
+
+  function playNote(){
+    if(!S.audio)return;
+    var osc=ctx.createOscillator();
+    osc.type="triangle";
+    osc.frequency.value=notes[index];
+    osc.connect(gain);
+    var now=ctx.currentTime;
+    osc.start(now);
+    osc.stop(now+.25);
+    index=(index+1)%notes.length;
+    setTimeout(playNote,360);
+  }
+
+  playNote();
+}
+
+function stopMusic(){
+  if(S.audio){
+    S.audio.close();
+    S.audio=null;
+    S.musicGain=null;
+  }
+}
+
+function stopClock(){
+  if(S.timer){
+    clearInterval(S.timer);
+    S.timer=null;
+  }
+}
+
+function startClock(){
+  stopClock();
+
+  S.timer=setInterval(function(){
+    S.minutes+=5;
+    paint();
+
+    for(var i=0;i<EVENTS.length;i++){
+      if(!EVENTS[i].done&&S.minutes>=EVENTS[i].at){
+        EVENTS[i].done=true;
+        stopClock();
+        runEvent(EVENTS[i].key);
+        return;
+      }
+    }
+
+    if(S.minutes>=1320){
+      stopClock();
+      victory();
+    }
+  },100);
+}
+
+function continueDay(){
+  if(S.sukoon<=0){
+    gameOver();
+    return;
+  }
+
+  if(S.minutes>=1320){
+    victory();
+    return;
+  }
+
+  showBreak();
+}
+
+function startScreen(){
+  stopClock();
+  stopMusic();
+  clearStage();
+
+  S.sukoon=100;
+  S.minutes=480;
+
+  EVENTS.forEach(function(event){event.done=false});
+  paint();
+
+  stage.appendChild(makeElement("span","badge","Hackathon Edition · The Perfect Day"));
+  stage.appendChild(makeElement("h1","","Desi Survival:<br>The Quest for Perfect Sukoon"));
+  stage.appendChild(makeElement("p","","Survive one day from 8 AM to 10 PM. Make the perfect tea, handle unexpected visitors, grab the biggest potato and survive the power outage."));
+
+  var button=makeElement("button","","Start Your Day ☀️");
+  button.onclick=function(){
+    startMusic();
+    showBreak(true);
+  };
+
+  stage.appendChild(button);
+  stage.appendChild(makeElement("p","small","Tip: Stay calm. The sandal has excellent accuracy."));
+}
+
+function showBreak(first){
+  clearStage();
+
+  stage.appendChild(makeElement("span","badge",fmt(S.minutes)));
+  stage.appendChild(makeElement("h2","",first?"The Day Begins":"Peace Break"));
+  stage.appendChild(makeElement("p","",first?"The tea is on the stove. Your journey begins now.":"A short break. The next challenge is waiting."));
+
+  var button=makeElement("button","ghost",first?"Start the clock ⏱️":"Continue the day ⏱️");
+  button.onclick=startClock;
+  stage.appendChild(button);
+}
+
+function runEvent(key){
+  if(key==="chai")chaiGame();
+  else if(key==="auntie")auntieGame();
+  else if(key==="aloo")alooGame();
+  else if(key==="light")loadGame();
+}
+
+function result(title,message,damage){
+  clearStage();
+
+  stage.appendChild(makeElement("h2","",title));
+  stage.appendChild(makeElement("p","",message));
+
+  if(damage>0)hit(damage);
+  else gain(5);
+
+  if(S.sukoon<=0){
+    var endButton=makeElement("button","","See the result 💀");
+    endButton.onclick=gameOver;
+    stage.appendChild(endButton);
+    return;
+  }
+
+  var button=makeElement("button","ghost","Continue →");
+  button.onclick=continueDay;
+  stage.appendChild(button);
+}
+
+function chaiGame(){
+  clearStage();
+
+  stage.appendChild(makeElement("span","badge","8:00 AM · Tea Challenge"));
+  stage.appendChild(makeElement("h2","","Keep the Tea in the Zone"));
+  stage.appendChild(makeElement("p","small","Hold the button to increase the heat. Release it to lower the heat. Keep the liquid inside the safe zone for 6 seconds."));
+
+  var pot=makeElement("div","pot");
+  var liquid=makeElement("div","");
+  liquid.id="chaiLiquid";
+
+  var zone=makeElement("div","safeZone");
+  zone.style.bottom="55%";
+  zone.style.height="22%";
+
+  pot.appendChild(zone);
+  pot.appendChild(liquid);
+  stage.appendChild(pot);
+
+  var info=makeElement("p","small","Perfect time: 0.0s");
+  stage.appendChild(info);
+
+  var button=makeElement("button","","🔥 Hold to Boil");
+  stage.appendChild(button);
+
+  var level=20;
+  var holding=false;
+  var good=0;
+  var finished=false;
+
+  function down(event){
+    event.preventDefault();
+    holding=true;
+  }
+
+  function up(event){
+    if(event)event.preventDefault();
+    holding=false;
+  }
+
+  button.addEventListener("mousedown",down);
+  button.addEventListener("touchstart",down,{passive:false});
+  window.addEventListener("mouseup",up);
+  window.addEventListener("touchend",up);
+
+  var loop=setInterval(function(){
+    if(finished)return;
+
+    level+=holding?1.6:-1.3;
+    level=Math.max(0,level);
+    liquid.style.height=Math.min(level,100)+"%";
+
+    if(level>=100){
+      finish(false);
+      return;
+    }
+
+    if(level>=55&&level<=77){
+      good+=.06;
+      info.textContent="Perfect time: "+good.toFixed(1)+"s";
+    }
+
+    if(good>=6)finish(true);
+  },60);
+
+  function finish(win){
+    if(finished)return;
+
+    finished=true;
+    clearInterval(loop);
+
+    window.removeEventListener("mouseup",up);
+    window.removeEventListener("touchend",up);
+
+    if(win){
+      result("Tea Perfected ☕","Perfect heat and no overflow. A peaceful start to the day.",0);
+    }else{
+      result("Tea Overflowed 😱","The tea escaped the pot. Your peace has taken serious damage.",20);
+    }
+  }
+}
+
+var QUESTIONS=[
+  {
+    q:"How much do you earn these days?",
+    a:["Enough for tea and snacks.","I am doing well, thank you.","Why, are you hiring?"],
+    good:[0,1]
+  },
+  {
+    q:"Your cousin scored 95%. What did you get?",
+    a:["That is a great result!","I survived, and that counts.","Grades are a social construct."],
+    good:[0,1]
+  },
+  {
+    q:"My daughter is an engineer. You should meet her.",
+    a:["That sounds wonderful!","Send me her résumé.","Please, no."],
+    good:[0]
+  },
+  {
+    q:"Why are you so quiet?",
+    a:["I am enjoying some peace and quiet.","I am saving my phone battery.","I am preparing for the next question."],
+    good:[0,1]
+  },
+  {
+    q:"When are you going to visit us?",
+    a:["Hopefully very soon!","I will check my schedule.","Never."],
+    good:[0,1]
+  }
+];
+
+function auntieGame(){
+  var questions=QUESTIONS.slice().sort(function(){return Math.random()-.5}).slice(0,3);
+  var current=0;
+  var wrong=0;
+
+  function ask(){
+    if(current>=questions.length){
+      if(wrong===0){
+        result("Conversation Master 🕶️","Three questions and zero damage. Perfect social survival.",0);
+      }else{
+        result("Conversation Survived 🔥","You survived, but some answers could have gone better.",8*wrong);
+      }
+      return;
+    }
+
+    var question=questions[current];
+
+    clearStage();
+    stage.appendChild(makeElement("span","badge","2:00 PM · Conversation Challenge"));
+    stage.appendChild(makeElement("h2","","Answer Quickly!"));
+    stage.appendChild(makeElement("p","",question.q));
+
+    var timerText=makeElement("p","small","Time: 5.0s");
+    stage.appendChild(timerText);
+
+    var grid=makeElement("div","grid");
+
+    question.a.forEach(function(answer,index){
+      var button=makeElement("button","opt",answer);
+      button.onclick=function(){
+        answerQuestion(question.good.indexOf(index)!==-1,false);
+      };
+      grid.appendChild(button);
+    });
+
+    stage.appendChild(grid);
+
+    var time=5;
+    var closed=false;
+
+    var timer=setInterval(function(){
+      time-=.1;
+      timerText.textContent="Time: "+Math.max(0,time).toFixed(1)+"s";
+      if(time<=0)answerQuestion(false,true);
+    },100);
+
+    function answerQuestion(correct,timeout){
+      if(closed)return;
+
+      closed=true;
+      clearInterval(timer);
+
+      if(!correct)wrong++;
+      current++;
+
+      clearStage();
+
+      stage.appendChild(makeElement("h2","",correct?"Smooth 😌":timeout?"Too Slow 🥶":"Wrong Move 😬"));
+      stage.appendChild(makeElement("p","",correct?"The conversation continues peacefully.":"That answer did not go according to plan."));
+
+      var next=makeElement("button","ghost",current>=questions.length?"See Result →":"Next Question →");
+      next.onclick=ask;
+      stage.appendChild(next);
+    }
+  }
+
+  ask();
+}
+
+function alooGame(){
+  clearStage();
+
+  stage.appendChild(makeElement("span","badge","5:00 PM · Dinner Challenge"));
+  stage.appendChild(makeElement("h2","","Grab the Potato"));
+  stage.appendChild(makeElement("p","small","Tap GRAB when the sandal is far from the potato. Get 3 clean grabs before 2 hits."));
+
+  var dish=makeElement("div","");
+  dish.id="dish";
+
+  var potato=makeElement("div","");
+  potato.id="aloo";
+
+  var sandal=makeElement("div","");
+  sandal.id="chappal";
+
+  dish.appendChild(potato);
+  dish.appendChild(sandal);
+  stage.appendChild(dish);
+
+  var info=makeElement("p","small","Grabs: 0/3 · Hits: 0/2");
+  stage.appendChild(info);
+
+  var button=makeElement("button","","🥔 GRAB!");
+  stage.appendChild(button);
+
+  var x=0;
+  var direction=1;
+  var speed=2.5;
+  var grabs=0;
+  var hits=0;
+  var finished=false;
+
+  var move=setInterval(function(){
+    if(finished)return;
+
+    var width=dish.clientWidth-60;
+    x+=direction*speed;
+
+    if(x>=width){
+      x=width;
+      direction=-1;
+    }
+
+    if(x<=0){
+      x=0;
+      direction=1;
+    }
+
+    sandal.style.left=x+"px";
+  },16);
+
+  button.onclick=function(){
+    if(finished)return;
+
+    var width=dish.clientWidth;
+    var center=width/2-30;
+
+    if(Math.abs(x-center)>width*.22){
+      grabs++;
+      speed+=.6;
+    }else{
+      hits++;
+      hit(12);
+    }
+
+    info.textContent="Grabs: "+grabs+"/3 · Hits: "+hits+"/2";
+
+    if(hits>=2||S.sukoon<=0)finish(false);
+    else if(grabs>=3)finish(true);
+  };
+
+  function finish(win){
+    if(finished)return;
+
+    finished=true;
+    clearInterval(move);
+
+    if(win){
+      result("Potato Secured 🥔","You grabbed the biggest piece without getting caught.",0);
+    }else{
+      result("Sandal Connected 🩴","Your timing was unfortunate. Dinner continues without the prize.",8);
+    }
+  }
+}
+
+function loadGame(){
+  clearStage();
+
+  stage.appendChild(makeElement("span","badge","9:00 PM · Power Outage"));
+  stage.appendChild(makeElement("h2","","Keep Yourself Cool"));
+  stage.appendChild(makeElement("p","small","The power is out. Tap FAN as quickly as possible for 8 seconds. Reach 35 taps."));
+
+  var fan=makeElement("div","");
+  fan.id="fan";
+  stage.appendChild(fan);
+
+  var info=makeElement("p","small","Taps: 0/35 · Time: 8.0s");
+  stage.appendChild(info);
+
+  var button=makeElement("button","","🌀 FAN!");
+  stage.appendChild(button);
+
+  var taps=0;
+  var time=8;
+  var rotation=0;
+  var finished=false;
+
+  button.onclick=function(){
+    if(finished)return;
+
+    taps++;
+    rotation+=45;
+    fan.style.transform="rotate("+rotation+"deg)";
+    update();
+
+    if(taps>=35)finish(true);
+  };
+
+  function update(){
+    info.textContent="Taps: "+taps+"/35 · Time: "+Math.max(0,time).toFixed(1)+"s";
+  }
+
+  var timer=setInterval(function(){
+    if(finished)return;
+
+    time-=.1;
+    update();
+
+    if(time<=0)finish(taps>=35);
+  },100);
+
+  function finish(win){
+    if(finished)return;
+
+    finished=true;
+    clearInterval(timer);
+
+    if(win){
+      result("Cool and Composed 🌬️","You survived the outage and kept your cool.",0);
+    }else{
+      result("Too Hot 🥵","The room is hot and the power is still gone.",18);
+    }
+  }
+}
+
+function getRank(score){
+  if(score>=90)return["Sukoon Sultan 👑","You achieved an impressive level of peace."];
+  if(score>=70)return["Tea Champion ☕","A little chaos, but excellent control."];
+  if(score>=45)return["Survivor 🙂","You made it through the day."];
+  if(score>=20)return["Barely Surviving 😵‍💫","You reached the finish line, somehow."];
+  return["Running on Empty 🫠","You survived mostly through determination."];
+}
+
+function victory(){
+  stopClock();
+  clearStage();
+
+  var score=Math.round(S.sukoon);
+  var rank=getRank(score);
+
+  stage.appendChild(makeElement("span","badge","10:00 PM"));
+  stage.appendChild(makeElement("h1","","Perfect Day Achieved!"));
+  stage.appendChild(makeElement("h2","",rank[0]));
+  stage.appendChild(makeElement("p","",rank[1]));
+  stage.appendChild(makeElement("p","","Peace remaining: <strong>"+score+"%</strong>"));
+
+  var button=makeElement("button","","Play Again 🔁");
+  button.onclick=startScreen;
+  stage.appendChild(button);
+}
+
+function gameOver(){
+  stopClock();
+  clearStage();
+
+  stage.appendChild(makeElement("h1","","Peace Destroyed!"));
+  stage.appendChild(makeElement("p","","The challenges were too much. The day has officially defeated you."));
+
+  var button=makeElement("button","","Retry the Day 🔁");
+  button.onclick=startScreen;
+  stage.appendChild(button);
+}
+
+startScreen();
+
+})();
+</script>
+</body>
+</html>
